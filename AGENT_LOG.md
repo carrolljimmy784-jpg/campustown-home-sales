@@ -48,3 +48,44 @@ Before editing files, explain your implementation plan and wait for approval."
 
 Agent produced: Replaced the placeholder page with a responsive dashboard that loads the CSV file, filters out sales below $10,000, calculates summary statistics directly from the dataset, displays overall metrics, and visualizes median sale prices by city using a Chart.js horizontal bar chart. The page also includes responsive styling and a data notes section documenting the filtering rule.
 Checked or changed: Reviewed the generated code, verified that data is loaded from the CSV file rather than hard-coded values, confirmed that sales below $10,000 are excluded from all price calculations, checked that median rather than average sale price is used for the primary visualization, and verified that the implementation follows the requirements in AGENTS.md.
+
+## 2026-11-17: Add City Explorer Feature while following all rules
+asked: "Read AGENTS.md and docs/data_description_sheet.md before making changes.
+
+Add a city explorer section below the existing chart.
+
+Requirements:
+- Add a dropdown containing all cities in the filtered dataset.
+- When a city is selected, display:
+  - city name
+  - associated university
+  - number of sales
+  - median sale price
+  - average sale price
+  - median miles_to_campus
+- Use the same rule as the rest of the dashboard (exclude sales below $10,000).
+- Match the existing visual style.
+- Explain your implementation plan before editing files."
+
+Agent Produced:"Added a city explorer below the chart in index.html. Its dropdown is populated from cities with qualifying sales; selecting one shows its associated university, sale count, median and average sale price, and median campus distance. All figures use sales priced at $10,000 or more. A note also flags that high prices can affect averages."
+
+Asked: "Read AGENTS.md and docs/data_description_sheet.md before making changes.
+
+Add a second Chart.js visualization comparing median sale prices by university.
+
+Use the existing filtered dataset and sort universities from highest to lowest median price.
+
+Match the existing styling and responsiveness.
+
+Then, 
+Add a histogram showing the distribution of sale prices after excluding sales below $10,000.
+
+Include a short explanation of why median price is emphasized over average price.
+
+- Use the same rule as the rest of the dashboard (exclude sales below $10,000).
+- Match the existing visual style.
+- Explain your implementation plan before editing files."
+
+Agent Produced:"Added two responsive Chart.js visualizations in index.html: university median sale prices sorted high-to-low, and a histogram of qualifying sales using logarithmically spaced price ranges. Both use the existing $10,000 minimum-price filter. The university chart also explains why medians are less affected by unusually high prices than averages.
+
+I checked the chart setup and filter in the source; I didn’t run a browser test. After publishing through GitHub Pages, open the site and scroll below the city chart to view both visualizations."
