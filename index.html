@@ -1,31 +1,443 @@
 <!DOCTYPE html>
-<!-- A placeholder from the Home Sales template. Replace this file with your site's first page. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Under construction</title>
-  <!-- An empty icon, so the browser doesn't log an error looking for favicon.ico -->
+  <meta name="theme-color" content="#f5f2eb">
+  <title>College Town Housing Explorer</title>
   <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <style>
-    :root { color-scheme: light dark; }
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172a3a;
+      background: #f5f2eb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --ink: #172a3a;
+      --muted: #62717b;
+      --line: #e5e2d9;
+      --paper: #fffefa;
+      --blue: #386c7c;
+      --gold: #d7a24a;
+    }
+
+    * { box-sizing: border-box; }
+
     body {
-      max-width: 40rem;
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 86% 0%, rgba(215, 162, 74, 0.13), transparent 34rem),
+        #f5f2eb;
+    }
+
+    .page-shell {
+      width: min(1120px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 3rem 1rem;
-      font-family: system-ui, sans-serif;
+      padding: 48px 0 56px;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: #8a6530;
+      font-size: 0.76rem;
+      font-weight: 750;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, p { margin-top: 0; }
+
+    h1 {
+      max-width: 740px;
+      margin-bottom: 14px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 6vw, 4.7rem);
+      font-weight: 500;
+      letter-spacing: -0.055em;
+      line-height: 0.99;
+    }
+
+    .intro {
+      max-width: 650px;
+      margin-bottom: 30px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.65;
+    }
+
+    .filter-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 26px;
+      padding: 9px 13px;
+      border: 1px solid #e8d7b6;
+      border-radius: 999px;
+      background: rgba(255, 254, 250, 0.7);
+      color: #654d28;
+      font-size: 0.88rem;
+      font-weight: 650;
+    }
+
+    .filter-note::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      content: "";
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .metric, .panel {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      box-shadow: 0 8px 26px rgba(32, 46, 54, 0.035);
+    }
+
+    .metric {
+      min-height: 120px;
+      padding: 20px;
+    }
+
+    .metric-label {
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      margin: 0;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-size: clamp(1.55rem, 3vw, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+    }
+
+    .panel { padding: 24px; }
+
+    .panel-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 16px;
+    }
+
+    .panel h2 {
+      margin-bottom: 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.55rem;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+    }
+
+    .panel-subtitle, .chart-order {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
       line-height: 1.5;
     }
-    footer { margin-top: 3rem; font-size: 0.875rem; opacity: 0.75; }
+
+    .chart-wrap {
+      position: relative;
+      height: 570px;
+    }
+
+    .status {
+      min-height: 1.5em;
+      margin: 12px 0 0;
+      color: #8b3e31;
+      font-size: 0.9rem;
+    }
+
+    .notes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 22px;
+      padding: 22px 24px;
+      border-left: 3px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      background: rgba(255, 254, 250, 0.68);
+    }
+
+    .notes h2 {
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      font-weight: 750;
+    }
+
+    .notes p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    footer {
+      margin-top: 24px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      .page-shell { width: min(100% - 28px, 600px); padding-top: 34px; }
+      .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .metric { min-height: 106px; padding: 16px; }
+      .panel { padding: 18px 14px; }
+      .panel-heading { display: block; }
+      .chart-order { margin-top: 8px; }
+      .chart-wrap { height: 560px; }
+      .notes { grid-template-columns: 1fr; gap: 18px; padding: 19px; }
+    }
+
+    @media (max-width: 380px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric-value { font-size: 1.45rem; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <h1>This site is under construction</h1>
-    <p>It will show findings from the College-town home sales dataset.</p>
+  <main class="page-shell">
+    <header>
+      <p class="eyebrow">A data-led look at local housing</p>
+      <h1>College Town Housing Explorer</h1>
+      <p class="intro">Explore home sale prices across college towns and compare how housing markets differ from one campus community to another.</p>
+      <p class="filter-note">Price analysis includes sales of $10,000 or more</p>
+    </header>
+
+    <section class="metrics" aria-label="Housing market summary">
+      <article class="metric">
+        <p class="metric-label">Sales analyzed</p>
+        <p class="metric-value" id="sales-count" aria-live="polite">—</p>
+      </article>
+      <article class="metric">
+        <p class="metric-label">Cities represented</p>
+        <p class="metric-value" id="cities-count">—</p>
+      </article>
+      <article class="metric">
+        <p class="metric-label">Universities represented</p>
+        <p class="metric-value" id="universities-count">—</p>
+      </article>
+      <article class="metric">
+        <p class="metric-label">Overall median sale price</p>
+        <p class="metric-value" id="overall-median">—</p>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="city-chart-title">
+      <div class="panel-heading">
+        <div>
+          <h2 id="city-chart-title">Median sale price by city</h2>
+          <p class="panel-subtitle">Each bar represents the median of qualifying sales in that city.</p>
+        </div>
+        <p class="chart-order">Highest to lowest</p>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="city-price-chart" role="img" aria-label="Horizontal bar chart of median sale price by city, sorted from highest to lowest"></canvas>
+      </div>
+      <p class="status" id="load-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="notes" aria-labelledby="data-notes-title">
+      <div>
+        <h2 id="data-notes-title">Data notes</h2>
+        <p>Sales below $10,000 are excluded from all price calculations, including the overall and city median sale prices. The sales analyzed count includes only rows with a valid numeric sale price of at least $10,000.</p>
+      </div>
+      <div>
+        <h2>About the data</h2>
+        <p>Each row represents a completed home sale. City and university counts reflect the qualifying sales included in this dashboard.</p>
+      </div>
+    </section>
+
+    <footer>
+      Data: College-town home sales dataset, version 1.0 (2026). Values shown are calculated from the source data.
+    </footer>
   </main>
-  <footer>
-    <p>Data: College-town home sales dataset, version 1.0 (2026). University of Illinois-Deloitte Foundation Center for Business Emerging Technologies. Data collected March 2026.</p>
-  </footer>
+
+  <script>
+    const currencyFormat = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    });
+    const numberFormat = new Intl.NumberFormat("en-US");
+
+    function parseCsv(text) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let quoted = false;
+
+      for (let index = 0; index < text.length; index += 1) {
+        const character = text[index];
+
+        if (quoted) {
+          if (character === '"' && text[index + 1] === '"') {
+            field += '"';
+            index += 1;
+          } else if (character === '"') {
+            quoted = false;
+          } else {
+            field += character;
+          }
+        } else if (character === '"' && field.length === 0) {
+          quoted = true;
+        } else if (character === ",") {
+          row.push(field);
+          field = "";
+        } else if (character === "\n" || character === "\r") {
+          if (character === "\r" && text[index + 1] === "\n") index += 1;
+          row.push(field);
+          rows.push(row);
+          row = [];
+          field = "";
+        } else {
+          field += character;
+        }
+      }
+
+      if (quoted) throw new Error("The CSV contains an unterminated quoted field.");
+      if (field.length > 0 || row.length > 0) {
+        row.push(field);
+        rows.push(row);
+      }
+
+      if (rows.length === 0) return [];
+      const headers = rows.shift().map((header, index) =>
+        index === 0 ? header.replace(/^\uFEFF/, "") : header
+      );
+      return rows
+        .filter((values) => values.some((value) => value !== ""))
+        .map((values) => Object.fromEntries(headers.map((header, index) => [header, values[index] || ""])));
+    }
+
+    function median(values) {
+      const sorted = values.slice().sort((first, second) => first - second);
+      const middle = Math.floor(sorted.length / 2);
+      return sorted.length % 2 === 0
+        ? (sorted[middle - 1] + sorted[middle]) / 2
+        : sorted[middle];
+    }
+
+    function showError(message) {
+      document.getElementById("load-status").textContent = message;
+    }
+
+    async function loadDashboard() {
+      if (typeof Chart === "undefined") {
+        showError("The chart library could not be loaded. Check your connection and reload the page.");
+        return;
+      }
+
+      try {
+        const response = await fetch("data/college_town_home_sales.csv");
+        if (!response.ok) {
+          throw new Error(`The data file could not be loaded (HTTP ${response.status}).`);
+        }
+
+        const rows = parseCsv(await response.text());
+        if (!rows.length || !Object.hasOwn(rows[0], "sale_price")) {
+          throw new Error("The data file is empty or does not contain a sale_price column.");
+        }
+
+        const sales = rows
+          .map((row) => ({
+            city: row.city.trim(),
+            university: row.university.trim(),
+            salePrice: Number(row.sale_price)
+          }))
+          .filter((sale) => Number.isFinite(sale.salePrice) && sale.salePrice >= 10000);
+
+        if (sales.length === 0) {
+          throw new Error("No sales with a valid price of at least $10,000 were found.");
+        }
+
+        const cityPrices = new Map();
+        sales.forEach((sale) => {
+          if (!sale.city) return;
+          if (!cityPrices.has(sale.city)) cityPrices.set(sale.city, []);
+          cityPrices.get(sale.city).push(sale.salePrice);
+        });
+
+        const cityMedians = Array.from(cityPrices, ([city, prices]) => ({
+          city,
+          median: median(prices)
+        })).sort((first, second) =>
+          second.median - first.median || first.city.localeCompare(second.city)
+        );
+
+        document.getElementById("sales-count").textContent = numberFormat.format(sales.length);
+        document.getElementById("cities-count").textContent =
+          numberFormat.format(new Set(sales.map((sale) => sale.city).filter(Boolean)).size);
+        document.getElementById("universities-count").textContent =
+          numberFormat.format(new Set(sales.map((sale) => sale.university).filter(Boolean)).size);
+        document.getElementById("overall-median").textContent =
+          currencyFormat.format(median(sales.map((sale) => sale.salePrice)));
+
+        new Chart(document.getElementById("city-price-chart"), {
+          type: "bar",
+          data: {
+            labels: cityMedians.map((item) => item.city),
+            datasets: [{
+              data: cityMedians.map((item) => item.median),
+              backgroundColor: cityMedians.map((_, index) =>
+                index === 0 ? "#d7a24a" : "#477a89"
+              ),
+              borderRadius: 4,
+              borderSkipped: false,
+              barPercentage: 0.76,
+              categoryPercentage: 0.82
+            }]
+          },
+          options: {
+            indexAxis: "y",
+            maintainAspectRatio: false,
+            responsive: true,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: (context) => ` Median sale price: ${currencyFormat.format(context.raw)}`
+                }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                grid: { color: "#ece9e1" },
+                ticks: {
+                  color: "#62717b",
+                  callback: (value) => currencyFormat.format(value)
+                }
+              },
+              y: {
+                grid: { display: false },
+                ticks: { color: "#344955" }
+              }
+            }
+          }
+        });
+      } catch (error) {
+        showError(`Unable to load the housing data. ${error.message}`);
+      }
+    }
+
+    loadDashboard();
+  </script>
 </body>
 </html>
