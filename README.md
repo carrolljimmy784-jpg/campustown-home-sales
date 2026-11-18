@@ -1,6 +1,4 @@
-# [Your site's title]
-
-College Town Housing Explorer
+# [College Town Housing Explorer]
 
 ## What this site is for
 
